@@ -10,3 +10,9 @@ This is a work in progress as of now and we expect it to develop fully in a coup
 4. The PYTHON package PHOTUTILS is being used for the photometry.
 
 We aim it to develop it as a fast and easy to handle alternative to the users dependent on IRAF/DAOPHOT kind of software.
+
+Currently, we are a team of 3 people, all working towards our PhD thesis and working on this as a side project:
+
+1. Vivek kumar Jha
+2. Dimple
+3. Kiran Wani
