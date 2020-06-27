@@ -14,12 +14,12 @@ We built all our codes on Python 3.6. The required packages:
 
 1. Numpy
 2. Astropy and its affiliated packages: (astropy 4.0 and above)
-  2.1 Photutils  (photutils 0.6 and above)
-  2.2 CCDProc
-  2.3 Astroalign
-  2.4 astroquery
-3. Matplotlib
-4. Ginga
+3. Photutils  (photutils 0.6 and above)
+4. CCDProc
+5. Astroalign
+6. astroquery
+7. Matplotlib
+8. Ginga
 
 We aim it to develop it as a fast and easy to handle alternative to the users dependent on IRAF/DAOPHOT kind of software.
 
