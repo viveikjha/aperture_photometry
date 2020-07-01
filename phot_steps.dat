@@ -1,0 +1,62 @@
+So, the photometry script can be run step by step in the following way:
+    
+We have to add a few things in a couple of days time.
+
+Step -1
+
+Slicing of the images and putting JD into their headers by getting the total time and integration time as well.
+
+Step -2
+
+Align the images with respect to a reference image. Check it with DS9.
+
+Step -3
+
+Reduction of the images:
+bias
+flat 
+cosmic rays
+overscan (optional right now)
+trim (optional right now)
+
+
+Step -4
+
+Find FWHM for the sources to determine the aperture. (use iraf and DS9 for the time being)
+
+Step -5
+
+Find the location of the sources you want to do photometry on. It has to be a careful step. The source as well as standard stars need to be chosen carefully.
+
+This step needs to be repated again and again if we don t find the comparision stars as non variable. (has to be done with IRAF and DS9 for the time being. We will develop python steps soon)
+
+Step -6:
+    
+Define the apertures, do the background subtraction, extract the flux and get the instrumental magnitudes. 
+-- We may have hundreds of sources, due to threshold. We will chose our source among those sources using a loop.
+
+Step -7:
+
+Save the results in ASCII file:
+    
+This will be the preferred format.
+
+X-position Y-position Ap1-mag Ap1-mag_er Ap2-mag Ap2-mag_er Ap3-mag Ap3-mag_er Ap4-mag Ap4-mag_er Ap5-mag Ap5-mag_er
+
+
+Step-8:
+
+For light curve generation, first satisfy yourself with step-5 and repeat step-7.
+
+One workaround can be: 
+Chose all the bright stars in the field as comparision stars and bypass repitition of step 5. We then set up permutation among those and minimize the deviation in the LC. The minimum deviation is chosen as the comparision one! (Need to verify this algorithm first).
+
+Step -9:
+
+Plot the light curves, as beautifully as you want.
+
+FINISH.
+
+
+
+
