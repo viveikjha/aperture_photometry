@@ -8,8 +8,8 @@ from glob import glob
 #from astroquery.astrometry_net import AstrometryNet
 from astropy.wcs import WCS
 import astroalign as aa
-
-
+data_path=''
+result_path=''
 def clean_the_images(path,filename):
     #ast=AstrometryNet()
     #ast.api_key= 'iqmqwvazpvolmjmn'
