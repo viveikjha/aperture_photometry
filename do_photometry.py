@@ -20,6 +20,8 @@ This program contains functions that perform:
 
 written by:
 Vivek, Kiran and Dimple at ARIES Nainital.
+
+This was written keeping the 1.3m DFOT in mind and the customizations are needed for various telescopes/datasets if required.
 '''
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
