@@ -409,7 +409,7 @@ def py_source_list(filename):
         plt.plot(mod_image)
         plt.show()
 
-def do_aperture_photometry(filename, fwhm,date):
+def do_aperture_photometry(filename,count, fwhm,date):
 
     #fwhm,files=iraf_fwhm()
 
@@ -437,7 +437,7 @@ def do_aperture_photometry(filename, fwhm,date):
     bkg = Background2D(data, (10,10), filter_size=(3, 3),sigma_clip=sigma_clip, bkg_estimator=bkg_estimator)
     back=bkg.background # this is the background we need for the background subtraction.
     back2=np.median(bkg.background)
-    print('median background is',back2)
+    #print('median background is',back2)
 
     mask = data == 0
     unit = u.electron / u.s
@@ -449,7 +449,7 @@ def do_aperture_photometry(filename, fwhm,date):
 
     mean, median, std = sigma_clipped_stats(xdf_image.data, sigma=3.0, maxiters=20, mask=xdf_image.mask)
 
-    print('Finding the sources')
+    #print('Finding the sources')
 
     #daofind = DAOStarFinder(fwhm=fwhm, threshold=5*std) # 3 sigma above the background.
     #sources = daofind(data-back)
@@ -462,7 +462,7 @@ def do_aperture_photometry(filename, fwhm,date):
     #print(sources['xcentroid'], sources['ycentroid'],sources['fwhm'])
     #positions=sources['xcentroid'], sources['ycentroid']
     positions=np.genfromtxt('co_ordinates_list.txt',unpack=True,usecols=(0,1))
-    print(positions)
+    #print(positions)
     radii=[ fwhm,2*fwhm, 3*fwhm,4*fwhm,5*fwhm]
 
     #positions=(sources['xcentroid'], sources['ycentroid'])
@@ -499,7 +499,7 @@ def do_aperture_photometry(filename, fwhm,date):
     mag_3=-2.5*np.log10(final_sum3/exposure)+22
     mag_4=-2.5*np.log10(final_sum4/exposure)+22
 
-    print(mag_back,mag_0,mag_1,mag_2,mag_3,mag_4)
+    #print(mag_back,mag_0,mag_1,mag_2,mag_3,mag_4)
 
 
     flux_err_0=phot_table['aperture_sum_err_0']
@@ -516,7 +516,7 @@ def do_aperture_photometry(filename, fwhm,date):
 
     flux_err_4=phot_table['aperture_sum_err_4']
     mag_err_4=1.09*flux_err_4/final_sum4
-
+    '''
     fig=plt.figure()
     plt.imshow(data,cmap='gray',origin='lower',vmin=mean-4*std,vmax=mean+4*std)
     colors=['red','salmon','yellow','blue','cyan']
@@ -525,15 +525,14 @@ def do_aperture_photometry(filename, fwhm,date):
 
     an_ap.plot(color='green', alpha=0.7)
     plt.show()
-
+    '''
     with open ('{}.dat'.format(date),'w') as r:
         for i in range (len(phot_table)):
             #print(final_sum0[i],final_sum1[i],final_sum2[i],final_sum3[i],final_sum4[i],final_sum5[i],file=r)
             print(mag_back[i],mag_0[i],mag_err_0[i],mag_1[i],mag_err_1[i],mag_2[i],mag_err_2[i],mag_3[i],mag_err_3[i],mag_4[i],mag_err_4[i],file=r)
 
+    print('No. {} file has been processed'.format(count+1))
 
-
-    return mag_back
     '''
 
 
