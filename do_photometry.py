@@ -51,9 +51,39 @@ from photutils import Background2D, MedianBackground, DAOStarFinder
 from photutils.utils import calc_total_error
 from photutils.detection import findstars
 
+def view_image(name):
+    '''
+    This module is meant for viewinga large number of images. The images
+    can be seen as an animation. Will be helpful for large datasets as it doesn't
+    require a lot of pointing and clicking.
+    INPUT:
+    name: The name of the image file.
+
+    OUTPUT:
+
+    the images seen as animation, with a gap of 1 second between successive images.
+    '''
+
+    data=fits.open(name)
+    image=data[0].data
+    head=data[0].header
+
+    mean,std=np.mean(image),np.std(image)
+    #image=image/np.median(image)
+    im=plt.imshow(image,cmap='gray_r',origin='lower',vmin=mean-2*std,vmax=mean+2*std)
+    #plt.scatter(124, 146, s=400,edgecolor='red',linewidth=1, facecolor='none')
+    ims.append([im])
+    plt.pause(1)
+    plt.clf()
+
+
+
+
 def clean_the_images(path,filename):
     '''
-    This module is meant for cleaning the images. The tasks to be included are: bias correction, flat correction, trimming, overscan as well as the cosmic ray removal from the science cases. (For the time we are skipping the overscan and trimming part.
+    This module is meant for cleaning the images. The tasks to be included are: bias correction,
+    flat correction, trimming, overscan as well as the cosmic ray removal from the science cases.
+    (For the time we are skipping the overscan and trimming part.
 
     INPUT:
     path: The directory where the images are kept (string)
@@ -379,7 +409,7 @@ def py_source_list(filename):
         plt.plot(mod_image)
         plt.show()
 
-def do_aperture_photometry(filename, fwhm):
+def do_aperture_photometry(filename, fwhm,date):
 
     #fwhm,files=iraf_fwhm()
 
@@ -421,24 +451,24 @@ def do_aperture_photometry(filename, fwhm):
 
     print('Finding the sources')
 
-    daofind = DAOStarFinder(fwhm=fwhm, threshold=5*std) # 3 sigma above the background.
-    sources = daofind(data-back)
+    #daofind = DAOStarFinder(fwhm=fwhm, threshold=5*std) # 3 sigma above the background.
+    #sources = daofind(data-back)
 
     #sources_findpeaks = find_peaks(xdf_image.data, mask=xdf_image.mask, threshold=30.*std, box_size=30, centroid_func=centroid_2dg)
 
-    print('We have found:',len(sources),' sources')
+    #print('We have found:',len(sources),' sources')
     #print(sources)
 
     #print(sources['xcentroid'], sources['ycentroid'],sources['fwhm'])
     #positions=sources['xcentroid'], sources['ycentroid']
-    #positions=np.genfromtxt('co_ordinates_list.txt',unpack=True,usecols=(0,1))
-    #print(positions)
+    positions=np.genfromtxt('co_ordinates_list.txt',unpack=True,usecols=(0,1))
+    print(positions)
     radii=[ fwhm,2*fwhm, 3*fwhm,4*fwhm,5*fwhm]
 
     #positions=(sources['xcentroid'], sources['ycentroid'])
-    apertures = [CircularAperture((928,985), r=r) for r in radii]
+    apertures = [CircularAperture(positions, r=r) for r in radii]
 
-    an_ap = CircularAnnulus((928,985), r_in=6*fwhm, r_out=8*fwhm)
+    an_ap = CircularAnnulus(positions, r_in=6*fwhm, r_out=6.2*fwhm)
     #apers = [apertures, annulus_apertures]
 
 
@@ -462,15 +492,15 @@ def do_aperture_photometry(filename, fwhm):
     final_sum3=phot_table['aperture_sum_3']-bkg_sum
     final_sum4=phot_table['aperture_sum_4']-bkg_sum
 
-    mag_1=-2.5*np.log10(abs(final_sum1)/exposure)+22
-    print(final_sum1,mag_1)
-    '''
     mag_back=-2.5*np.log10(bkg_mean/exposure)+22
     mag_0=-2.5*np.log10(final_sum0/exposure)+22
     mag_1=-2.5*np.log10(final_sum1/exposure)+22
     mag_2=-2.5*np.log10(final_sum2/exposure)+22
     mag_3=-2.5*np.log10(final_sum3/exposure)+22
     mag_4=-2.5*np.log10(final_sum4/exposure)+22
+
+    print(mag_back,mag_0,mag_1,mag_2,mag_3,mag_4)
+
 
     flux_err_0=phot_table['aperture_sum_err_0']
     mag_err_0=1.09*flux_err_0/final_sum0
@@ -496,14 +526,14 @@ def do_aperture_photometry(filename, fwhm):
     an_ap.plot(color='green', alpha=0.7)
     plt.show()
 
-    with open ('results.dat','w') as r:
+    with open ('{}.dat'.format(date),'w') as r:
         for i in range (len(phot_table)):
             #print(final_sum0[i],final_sum1[i],final_sum2[i],final_sum3[i],final_sum4[i],final_sum5[i],file=r)
             print(mag_back[i],mag_0[i],mag_err_0[i],mag_1[i],mag_err_1[i],mag_2[i],mag_err_2[i],mag_3[i],mag_err_3[i],mag_4[i],mag_err_4[i],file=r)
 
 
 
-    '''
+    return mag_back
     '''
 
 
