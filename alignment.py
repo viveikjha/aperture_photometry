@@ -4,15 +4,15 @@ from glob import glob
 from astropy.io import fits
 import astroalign as aa
 
-image_path='/mnt/eac99553-b108-449e-bf41-0716c975df8b/TRT-data/NGC 5947/band_wise/R_band/aligned'
+image_path='/mnt/eac99553-b108-449e-bf41-0716c975df8b/TRT-data/NGC 5947/band_wise/B_band/'
 calibration_path='/mnt/eac99553-b108-449e-bf41-0716c975df8b/TRT-data/calibration/'
 filename='*fits'
 
 s=sorted(glob(os.path.join(image_path,filename)))
-#print(len(s))
+print(len(s))
 ref=s[1]
-
-view_image(s[72],10) #46,47,48,49 do again
+for i in range(len(s)):
+    view_image(s[i],1) 
 #image=fits.open(ref)
 #reference_image=image[0].data
 '''
