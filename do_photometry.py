@@ -51,19 +51,20 @@ from photutils import Background2D, MedianBackground, DAOStarFinder
 from photutils.utils import calc_total_error
 from photutils.detection import findstars
 
-def view_image(name):
+def view_image(name,time):
     '''
     This module is meant for viewinga large number of images. The images
     can be seen as an animation. Will be helpful for large datasets as it doesn't
     require a lot of pointing and clicking.
     INPUT:
     name: The name of the image file.
+    time: No. of seconds you'd like to see the image on screen
 
     OUTPUT:
 
     the images seen as animation, with a gap of 1 second between successive images.
     '''
-
+    ims=[]
     data=fits.open(name)
     image=data[0].data
     head=data[0].header
@@ -73,7 +74,7 @@ def view_image(name):
     im=plt.imshow(image,cmap='gray_r',origin='lower',vmin=mean-2*std,vmax=mean+2*std)
     #plt.scatter(124, 146, s=400,edgecolor='red',linewidth=1, facecolor='none')
     ims.append([im])
-    plt.pause(1)
+    plt.pause(time)
     plt.clf()
 
 

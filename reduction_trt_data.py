@@ -46,7 +46,7 @@ sfilename='*fits'
 
 s=sorted(glob(os.path.join(image_path,sfilename)))
 print(len(s))
-for k in range(60,70):
+for k in range(0,9):
     image=ccdproc.CCDData.read(s[k],unit='adu')
     head=image.header
     jd=head['JD']
@@ -61,7 +61,7 @@ for k in range(60,70):
     mean,std=np.mean(flat_corrected),np.std(flat_corrected)
     #print(mean,std)
     #view_image(s[k])
-    do_aperture_photometry(s[k],k,6,jd)
+    do_aperture_photometry(flat_corrected,k,6,jd)
     #print(jd,mag_back)
 #plt.show()
 
