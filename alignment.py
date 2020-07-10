@@ -4,23 +4,25 @@ from glob import glob
 from astropy.io import fits
 import astroalign as aa
 
-image_path='/mnt/eac99553-b108-449e-bf41-0716c975df8b/TRT-data/NGC 5947/band_wise/B_band/'
+image_path='/mnt/eac99553-b108-449e-bf41-0716c975df8b/TRT-data/NGC 5947/band_wise/V_band/aligned/'
 calibration_path='/mnt/eac99553-b108-449e-bf41-0716c975df8b/TRT-data/calibration/'
 filename='*fits'
 
 s=sorted(glob(os.path.join(image_path,filename)))
 print(len(s))
-ref=s[67]
-'''
-for i in range(69,len(s)): #42,43,44,45 do again
+#ref=s[19]
+
+for i in range(0,len(s)): #42,43,44,45 do again
     print(i)
     view_image(s[i],1)
 '''
-ref=s[69] # image no 3,46,50 and 69 have been used.
+ # image no 3,46,50 and 69 have been used for B band.
+
+# don't know what works for V band.
 image=fits.open(ref)
 reference_image=image[0].data
 
-for i in range(69,len(s)):
+for i in range(2,len(s)):
     image_data=fits.open(s[i])
     source_image=image_data[0].data
     header=image_data[0].header
@@ -30,3 +32,4 @@ for i in range(69,len(s)):
     fits.writeto(aligned_file+'_aligned'+'.fits',image_aligned,header,overwrite=True)
 
     print('No. %i done'%i)
+'''

@@ -527,7 +527,7 @@ def do_aperture_photometry(filename,count, fwhm,date):
     an_ap.plot(color='green', alpha=0.7)
     plt.show()
     '''
-    with open ('{}.dat'.format(date),'w') as r:
+    with open ('{}_r.dat'.format(date),'w') as r:
         for i in range (len(phot_table)):
             #print(final_sum0[i],final_sum1[i],final_sum2[i],final_sum3[i],final_sum4[i],final_sum5[i],file=r)
             print(mag_back[i],mag_0[i],mag_err_0[i],mag_1[i],mag_err_1[i],mag_2[i],mag_err_2[i],mag_3[i],mag_err_3[i],mag_4[i],mag_err_4[i],file=r)
