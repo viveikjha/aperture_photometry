@@ -19,7 +19,7 @@ mp.rcParams['xtick.labelsize']=36
 mp.rcParams['ytick.labelsize']=36
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-files=sorted(glob.glob('light_curves/*i.dat'))
+files=sorted(glob.glob('light_curves/*b.dat'))
 agn=[]
 s1=[]
 s2=[]
@@ -38,7 +38,7 @@ for i in range(0,len(files)):
     #print(files[i])
     julian.append(float(jd[13:25])-2458850)
     bkg=np.genfromtxt(files[i],unpack=True,usecols=0)
-    sources,source_err=np.genfromtxt(files[i],unpack=True,usecols=(3,4))
+    sources,source_err=np.genfromtxt(files[i],unpack=True,usecols=(5,6))
     agn.append(sources[0])
     agn_err.append(source_err[0])
     s1.append(sources[6]-sources[5])
@@ -53,7 +53,7 @@ for i in range(0,len(files)):
 
 fig,ax=plt.subplots()
 #plt.plot(julian,s1,'ko',markersize=15,label='star differential')
-plt.plot(julian,agn,'ko',markersize=15,label='I band lc')
+plt.plot(julian,agn,'ko',markersize=15,label='B band lc')
 #plt.plot(julian,s2,'go',markersize=15,label='AGN differential 2')
 #plt.errorbar(julian,s1,yerr=s1_err,capsize=5,fmt=' ')
 plt.errorbar(julian,agn,yerr=s1_err,capsize=5,fmt=' ')

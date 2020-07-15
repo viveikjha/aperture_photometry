@@ -27,7 +27,7 @@ import os
 import matplotlib.animation as animation
 from do_photometry import view_image, do_aperture_photometry
 
-image_path='/mnt/eac99553-b108-449e-bf41-0716c975df8b/TRT-data/NGC 5947/band_wise/R_band/aligned/'
+image_path='/mnt/eac99553-b108-449e-bf41-0716c975df8b/TRT-data/NGC 5947/band_wise/B_band/aligned/'
 calibration_path='/mnt/eac99553-b108-449e-bf41-0716c975df8b/TRT-data/calibration/'
 filename='flat_files/MF-1-B*fits'
 flats=sorted(glob(os.path.join(calibration_path,filename)))
@@ -46,10 +46,11 @@ sfilename='*fits'
 
 s=sorted(glob(os.path.join(image_path,sfilename)))
 print(len(s))
-for k in range(70,74):
+for k in range(70,len(s)):
     image=ccdproc.CCDData.read(s[k],unit='adu')
     head=image.header
     jd=head['JD']
+    #view_image(s[k],1)
     do_aperture_photometry(s[k],k,6,jd)
     '''
     #view_image(s[k],1)
