@@ -1,29 +1,38 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+
+
 import numpy as np
 import matplotlib as mp
-import matplotlib.pyplot as plt
-import ccdproc,os,sys,time,random, csv
-from glob import glob
+import ccdproc,os,sys,time,random
 from astropy import units as u
+import matplotlib.pyplot as plt
 from astropy.io import fits
 from astropy.time import Time
+from glob import glob
+#from astroquery.astrometry_net import AstrometryNet
 from astropy.wcs import WCS
+import astroalign as aa
+#from pyraf import iraf
+#from iraf import noao,imred,specred
 from astropy.nddata import CCDData
 from astropy.stats import sigma_clipped_stats, SigmaClip
-from astropy.stats import SigmaClip, mad_std
-from photutils.background import Background2D, MeanBackground,SExtractorBackground
-from photutils.detection import find_peaks, DAOStarFinder, IRAFStarFinder
-from photutils.aperture import CircularAperture, CircularAnnulus, aperture_photometry
+from astropy.visualization import ImageNormalize, LogStretch
+from matplotlib.ticker import LogLocator
+from photutils.background import Background2D, MedianBackground, MeanBackground,SExtractorBackground
+from photutils.aperture import  CircularAperture, CircularAnnulus, aperture_photometry
 from photutils.centroids import centroid_2dg
-from photutils.background import Background2D, MedianBackground
+from astropy.stats import SigmaClip, mad_std
 from photutils.utils import calc_total_error
+from photutils.detection import find_peaks,DAOStarFinder, IRAFStarFinder
 from astropy.coordinates import SkyCoord
 from astropy import coordinates as coord
 from astropy import units as u
 from astroquery.simbad import Simbad
 import pandas as pd
+import os, csv
+
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -37,8 +46,8 @@ warnings.filterwarnings("ignore")
 
 ### Cleaning images
 
-path='/home/vivek/workhub/aperture_photometry/images/'
-filename='S-2022APXX-2022-02-01T18:00:55.911-DFOT-2K_IMG1_cleaned.fits'
+path=os.getcwd()
+filename='crr_ALHe090282_astro_r.fits'
 
 
 def view_image(name,time):
@@ -162,7 +171,7 @@ def align_the_images(path,filename,ref_image):
 
         print('Alignment of image no. %i  done'%i)
 
-def do_photometry(path,filename,fwhm=4,sigma=5):
+def do_photometry(path,filename,fwhm=4,sigma=3):
     '''
     To identify the sources based on either IRAFStarFinder, or Star/DAO finder.
     Inputs:
@@ -176,13 +185,14 @@ def do_photometry(path,filename,fwhm=4,sigma=5):
     header=data[0].header
     jd=header['JD']
     wcs = WCS(data[0].header)
-    sigma_clip = SigmaClip(sigma=3, maxiters=10)
+    sigma_clip = SigmaClip(sigma=2, maxiters=10)
     bkg_estimator = SExtractorBackground()
     bkg = Background2D(image, (10,10), filter_size=(3, 3),sigma_clip=sigma_clip, bkg_estimator=bkg_estimator) 
     back=bkg.background
     mean, median, std = np.mean(image), np.median(image), np.std(image)
-    iraf_find = IRAFStarFinder(fwhm=fwhm, threshold=sigma*std)
-    sources=iraf_find(image - back) # customizable
+    mean, median, std = sigma_clipped_stats(image, sigma=3.0)  
+    iraf_find = IRAFStarFinder(fwhm=fwhm, threshold=sigma*std, sigma_radius=5, minsep_fwhm=3, sharplo=0.1, sharphi=100.0, roundlo=0.0, roundhi=100.0,)
+    sources=iraf_find(image-back) # customizable
     print(len(sources),' sources have been found.')
     fwhm_0=sources['fwhm']
     fwhm=np.median(fwhm_0)
@@ -216,6 +226,30 @@ def do_photometry(path,filename,fwhm=4,sigma=5):
     mag_2=-2.5*np.log10(final_sum2/exposure)
     mag_3=-2.5*np.log10(final_sum3/exposure)
     mag_4=-2.5*np.log10(final_sum4/exposure)
+
+    try:
+        wcs = WCS(header)
+
+        fig = plt.figure()
+        ax = plt.subplot(projection=wcs)
+        ax.imshow(image, cmap='gray', origin='lower', vmin=mean-1.5*std, vmax=mean+1.5*std)
+        ax.set_xlabel('Right Ascension (J2000)')
+        ax.set_ylabel('Declination (J2000)')
+        #colors=['red','green','yellow','blue','black']
+        #for i in range(len(apertures)):
+        #    apertures[i].plot(color=colors[i], alpha=0.7) 
+        for aperture in apertures:
+            positions = aperture.positions
+            plt.scatter(positions[:, 0], positions[:, 1], marker='x', color='red', s=10) 
+        #an_ap.plot(color='red', alpha=0.7) 
+
+    except (IOError, KeyError):
+        fig = plt.figure()
+        plt.imshow(image, cmap='gray', origin='lower', vmin=mean-2*std, vmax=mean+2*std)
+
+
+    plt.show()
+
 
     flux_err_0=phot_table['aperture_sum_err_0']
     mag_err_0=1.09*flux_err_0/final_sum0
@@ -388,10 +422,11 @@ def plot_the_histogram(calibrated_magnitude_file):
 
 def main():
     start = time.time()
-    clean_the_images(path)
-    photometry_list=do_photometry(path,filename)
+    #view_image(filename,4)
+    #clean_the_images(path)
+    photometry_list=do_photometry(path,filename,4,3)
     calib_magnitudes=calibrate_magnitudes(photometry_list)
-    plot_the_histogram(calib_magnitudes)
+    #plot_the_histogram(calib_magnitudes)
     end = time.time()
     print('Execution took: ',end - start,' seconds')
 

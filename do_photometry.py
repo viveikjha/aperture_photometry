@@ -43,13 +43,12 @@ from astropy.nddata import CCDData
 from astropy.stats import sigma_clipped_stats, SigmaClip
 from astropy.visualization import ImageNormalize, LogStretch
 from matplotlib.ticker import LogLocator
-from photutils.background import Background2D, MeanBackground,SExtractorBackground
-from photutils import find_peaks, CircularAperture, CircularAnnulus, aperture_photometry
+from photutils.background import Background2D, MedianBackground, MeanBackground,SExtractorBackground
+from photutils.aperture import  CircularAperture, CircularAnnulus, aperture_photometry
 from photutils.centroids import centroid_2dg
 from astropy.stats import SigmaClip, mad_std
-from photutils import Background2D, MedianBackground, DAOStarFinder
 from photutils.utils import calc_total_error
-from photutils.detection import findstars
+from photutils.detection import find_peaks,DAOStarFinder
 
 def view_image(name,time):
     '''
